@@ -218,10 +218,17 @@ public class TwilioVoicePlugin: NSObject, FlutterPlugin, FlutterStreamHandler, T
 
         logEvent(description: "Making new call")
 
-        var params: [String: Any] = [
-            if(from != nil) Constants.PARAM_FROM: from,
-            if(to != nil) Constants.PARAM_TO: to,
-        ]
+//        var params: [String: Any] = [
+//            if(from != nil) Constants.PARAM_FROM: from,
+//            if(to != nil) Constants.PARAM_TO: to,
+//        ]
+        var params: [String: Any] = [:]
+        if let from = from {
+            params[Constants.PARAM_FROM] = from
+        }
+        if let to = to {
+            params[Constants.PARAM_TO] = to
+        }
         if let extraOptions = extraOptions {
             params.merge(extraOptions) { (_, new) in
                 new
@@ -599,8 +606,20 @@ public class TwilioVoicePlugin: NSObject, FlutterPlugin, FlutterStreamHandler, T
             }
             break
         case .connect:
-            guard let to = arguments[Constants.PARAM_TO] as? String?
-            guard let from = arguments[Constants.PARAM_FROM] as? String
+//            guard let to = arguments[Constants.PARAM_TO] as? String?
+//            guard let from = arguments[Constants.PARAM_FROM] as? String
+            guard let to = arguments[Constants.PARAM_TO] as? String else {
+                result(FlutterError(code: FlutterErrorCodes.missingParameter,
+                                    message: "\(Constants.PARAM_TO) is required",
+                                    details: nil))
+                return
+            }
+            guard let from = arguments[Constants.PARAM_FROM] as? String else {
+                result(FlutterError(code: FlutterErrorCodes.missingParameter,
+                                    message: "\(Constants.PARAM_FROM) is required",
+                                    details: nil))
+                return
+            }
 
             var params: [String: Any] = [:]
             arguments.forEach { (key, value) in
